@@ -11,7 +11,7 @@ const Home = () => {
   
   useEffect(() => {
     axios
-      .get('https://randomuser.me/api/?results=10')
+      .get('https://randomuser.me/api/?results=5000')
       .then((res) => {
         setUsers(res.data.results)
       })
@@ -19,21 +19,6 @@ const Home = () => {
         console.log(err)
       })
   }, [])
-
-  const options = [
-    {
-      label: "All",
-      value: "all",
-    },
-    {
-      label: "Female",
-      value: "female",
-    },
-    {
-      label: "Male",
-      value: "male",
-    }
-  ]
 
   const userColumns = [
     {
@@ -124,19 +109,20 @@ const Home = () => {
           </div>
           <div className='my-2 col-3'>
             <select id='gender' name='gender' 
+            value={gender}
             onChange={(e) => setGender(e.target.value)} 
             className='p-2 mt-2 mb-3 border-2 border-solid rounded-xl col-12'>
               <option value="" disabled selected hidden>Choose your role</option>
-              {options.map((option) => (
-                <option value={option.value}>{option.label}</option>
-              ))}
+              <option value='all'>All</option>
+              <option value='female'>Female</option>
+              <option value='male'>Male</option>
             </select>
           </div>
           <button className='border-2 col-1 rounded-xl' onClick={resetFilter}>Reset Form</button>
         </div>
         <hr className='my-7' />
         <div className='px-24 text-center col-12'>
-        {
+        {/*
           searchInput.length > 1 ? (
             <>
               <DataTable columns={userColumns} data={filteredResults} paginationRowsPerPageOptions={[5,10,15,20,25]} pagination />
@@ -144,6 +130,37 @@ const Home = () => {
           ) : (
             <>
               <DataTable columns={userColumns} data={users} paginationRowsPerPageOptions={[5,10,15,20,25]} pagination />
+            </>
+          )
+        */}
+        {
+          searchInput.length > 1 && (gender === 'female' || gender === 'male') ? (
+            <>
+              <DataTable columns={userColumns} data={
+                filteredResults.filter((item) => {
+                  return item.gender === `${gender}`
+                })
+              } paginationRowsPerPageOptions={[5,10,15]} pagination />
+            </>
+          ) : (searchInput.length > 1 && gender === 'all') || searchInput.length > 1 ? (
+            <>
+              <DataTable columns={userColumns} data={filteredResults} paginationRowsPerPageOptions={[5,10,15]} pagination />
+            </>
+          ) : gender === 'female' || gender === 'male' ? (
+            <>
+              <DataTable columns={userColumns} data={
+                users.filter((item) => {
+                  return item.gender === `${gender}`
+                })
+              } paginationRowsPerPageOptions={[5,10,15]} pagination />
+            </>
+          ) : gender === 'all' ? (
+            <>
+              <DataTable columns={userColumns} data={users} paginationRowsPerPageOptions={[5,10,15]} pagination />
+            </>
+          ) : (
+            <>
+              <DataTable columns={userColumns} data={users} paginationRowsPerPageOptions={[5,10,15]} pagination />
             </>
           )
         }
